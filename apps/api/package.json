@@ -1,0 +1,37 @@
+{
+  "name": "entra-invite-api",
+  "version": "1.0.0",
+  "description": "Entra Invite - NestJS backend",
+  "scripts": {
+    "build": "nest build",
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "start:debug": "nest start --debug --watch",
+    "start:prod": "node dist/main"
+  },
+  "dependencies": {
+    "@azure/msal-node": "^2.16.2",
+    "@microsoft/microsoft-graph-client": "^3.0.7",
+    "@nestjs/common": "^10.4.4",
+    "@nestjs/config": "^3.2.3",
+    "@nestjs/core": "^10.4.4",
+    "@nestjs/jwt": "^10.2.0",
+    "@nestjs/platform-express": "^10.4.4",
+    "@nestjs/typeorm": "^10.0.2",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "jwks-rsa": "^3.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "joi": "^17.13.3",
+    "pg": "^8.12.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1",
+    "typeorm": "^0.3.20"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^10.4.5",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^22.7.4",
+    "typescript": "^5.6.2"
+  }
+}
