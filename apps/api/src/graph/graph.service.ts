@@ -18,6 +18,21 @@ export class GraphService {
    * directory user, or null if no user exists. The caller decides how the
    * token was obtained (OBO in production, ROPC in dev).
    */
+  /**
+   * Returns the signed-in user's own profile from Graph (/me).
+   * Throws if the token is invalid, expired, or lacks User.Read scope.
+   * Used by the accept-invite flow to verify the Entra identity of the
+   * user who clicked the invite link.
+   */
+  async getMe(graphToken: string): Promise<DirectoryUser> {
+    const client = Client.init({ authProvider: (done) => done(null, graphToken) });
+    const me = await client
+      .api('/me')
+      .select('id,displayName,mail,userPrincipalName')
+      .get();
+    return me as DirectoryUser;
+  }
+
   async findUserByUpn(graphToken: string, upn: string): Promise<DirectoryUser | null> {
     const client = Client.init({ authProvider: (done) => done(null, graphToken) });
 

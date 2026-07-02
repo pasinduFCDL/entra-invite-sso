@@ -28,6 +28,10 @@ export default () => ({
     adminEmail: process.env.SEED_ADMIN_EMAIL,
     adminName: process.env.SEED_ADMIN_NAME || 'Pilot Admin',
   },
+  auth: {
+    jwtSecret: process.env.AUTH_JWT_SECRET,
+    jwtExpires: process.env.AUTH_JWT_EXPIRES || '8h',
+  },
   // Dev-only: acquire the admin's delegated token via ROPC instead of an
   dev: {
     enabled: process.env.DEV_MODE === 'true',

@@ -24,6 +24,10 @@ export const envValidationSchema = Joi.object({
   SEED_ADMIN_EMAIL: Joi.string().email().required(),
   SEED_ADMIN_NAME: Joi.string().default('Pilot Admin'),
 
+  // App session JWT (Day 2)
+  AUTH_JWT_SECRET: Joi.string().min(16).required(),
+  AUTH_JWT_EXPIRES: Joi.string().default('8h'),
+
   // Dev-only ROPC credentials (optional; only needed when DEV_MODE=true)
   DEV_MODE: Joi.string().valid('true', 'false').default('false'),
   DEV_ADMIN_USERNAME: Joi.string().allow('').optional(),

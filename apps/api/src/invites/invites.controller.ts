@@ -12,9 +12,9 @@ import { User } from '../users/entities/user.entity';
 import { OboService } from '../graph/obo.service';
 import { InvitesService } from './invites.service';
 import { CreateInviteDto } from './dto/create-invite.dto';
+import { AcceptInviteDto } from './dto/accept-invite.dto';
 
-@Controller('invites')
-@UseGuards(AzureJwtGuard, AdminGuard)
+@Controller("invites")
 export class InvitesController {
   constructor(
     private readonly invites: InvitesService,
@@ -22,15 +22,22 @@ export class InvitesController {
   ) {}
 
   @Post()
-  @HttpCode(200) // 200 for renew; created path returns its own code in the body
-  async create(
-    @Body() dto: CreateInviteDto,
-    @AzureToken() adminApiToken: string,
-    @CurrentUser() admin: User,
-  ) {
-    // Production flow: exchange the admin's delegated API token for a Graph
-    // token via OBO, then run the invite.
+  @HttpCode(200)
+  @UseGuards(AzureJwtGuard, AdminGuard)
+  async create(@Body() dto: CreateInviteDto, @AzureToken() adminApiToken: string, @CurrentUser() admin: User) {
     const graphToken = await this.obo.getGraphToken(adminApiToken);
     return this.invites.invite(dto, graphToken, admin.id);
+  }
+
+  @Post("dev")
+  @HttpCode(200)
+  async devInvite(@Body() dto: CreateInviteDto) {
+    return this.invites.devInvite(dto);
+  }
+
+  @Post("accept")
+  @HttpCode(200)
+  accept(@Body() dto: AcceptInviteDto) {
+    return this.invites.accept(dto);
   }
 }

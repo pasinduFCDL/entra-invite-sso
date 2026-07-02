@@ -3,6 +3,21 @@ import { apiScopes } from '../auth/msalConfig';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
+export interface AcceptInviteRequest {
+  invitationToken: string;
+  entraToken: string;
+}
+
+export interface AcceptInviteSuccess {
+  accessToken: string;
+  user: {
+    id: string;
+    email: string;
+    role: string;
+    displayName: string;
+  };
+}
+
 export interface InviteRequest {
   username: string;
   role: string;
@@ -48,6 +63,19 @@ export async function submitInviteDev(body: InviteRequest): Promise<InviteSucces
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw parseError(res.status, data);
   return data as InviteSuccess;
+}
+
+/** Day 2: exchange an invitation token + Entra Graph token for an app session JWT. */
+export async function acceptInvite(body: AcceptInviteRequest): Promise<AcceptInviteSuccess> {
+  const res = await fetch(`${API_BASE}/invites/accept`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw parseError(res.status, data);
+  return data as AcceptInviteSuccess;
 }
 
 /**

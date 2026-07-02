@@ -4,7 +4,6 @@ import * as jwt from 'jsonwebtoken';
 
 export interface InviteTokenResult {
   token: string;
-  expiresAt: Date;
   url: string;
 }
 
@@ -31,11 +30,9 @@ export class InviteTokenService {
       this.secret,
       { expiresIn: this.expiresIn } as jwt.SignOptions,
     );
-
-    const decoded = jwt.decode(token) as jwt.JwtPayload;
-    const expiresAt = new Date(decoded.exp * 1000);
+    
     const url = `${this.appBaseUrl}/accept-invite?token=${encodeURIComponent(token)}`;
 
-    return { token, expiresAt, url };
+    return { token, url };
   }
 }

@@ -13,7 +13,6 @@ export class User {
   id: string;
 
   // Always stored/queried lowercase (normalized in UsersService) so the
-  // unique constraint also behaves case-insensitively.
   @Column({ unique: true })
   email: string;
 
@@ -32,9 +31,6 @@ export class User {
 
   @Column({ name: 'invitation_token', type: 'text', nullable: true })
   invitationToken: string;
-
-  @Column({ name: 'invitation_expires_at', type: 'timestamptz', nullable: true })
-  invitationExpiresAt: Date;
 
   @Column({ name: 'invitation_url', type: 'text', nullable: true })
   invitationUrl: string;

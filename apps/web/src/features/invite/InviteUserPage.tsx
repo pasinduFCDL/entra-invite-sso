@@ -48,7 +48,7 @@ export default function InviteUserPage() {
           <input
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="jane"
+           // placeholder="jane"
             required
             style={{ display: 'block', padding: 8, width: '100%', marginTop: 4 }}
           />
@@ -85,8 +85,6 @@ export default function InviteUserPage() {
           for {feedback.data.email} ({feedback.data.role}).
           <div style={{ marginTop: 8, fontSize: 13 }}>
             <code style={{ wordBreak: 'break-all' }}>{feedback.data.invitationUrl}</code>
-            <br />
-            Expires: {new Date(feedback.data.expiresAt).toLocaleString()}
           </div>
         </div>
       )}
