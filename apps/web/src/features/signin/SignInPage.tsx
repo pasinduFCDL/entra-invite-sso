@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMsal } from '@azure/msal-react';
 import { graphUserReadScopes, signInRedirectUri } from '../../auth/msalConfig';
+import { setAuthToken } from '../../auth/authToken';
 import { signIn } from '../../api/inviteApi';
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -70,7 +71,7 @@ export default function SignInPage() {
   async function exchangeTokens(entraToken: string) {
     try {
       const result = await signIn({ entraToken });
-      sessionStorage.setItem('auth_token', result.accessToken);
+      setAuthToken(result.accessToken);
       navigate('/', { replace: true, state: { user: result.user } });
     } catch (err: any) {
       const code: string = err?.code || 'ERROR';

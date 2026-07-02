@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useMsal } from '@azure/msal-react';
 import { jwtDecode } from 'jwt-decode';
 import { graphUserReadScopes } from '../../auth/msalConfig';
+import { setAuthToken } from '../../auth/authToken';
 import { acceptInvite } from '../../api/inviteApi';
 
 // ── Decode invite JWT client-side (no signature check — backend verifies) ──
@@ -118,7 +119,7 @@ export default function AcceptInvitePage() {
   async function exchangeTokens(invitationToken: string, entraToken: string) {
     try {
       const result = await acceptInvite({ invitationToken, entraToken });
-      sessionStorage.setItem('auth_token', result.accessToken);
+      setAuthToken(result.accessToken);
       sessionStorage.removeItem(INVITE_TOKEN_KEY);
       navigate('/', { replace: true, state: { user: result.user } });
     } catch (err: any) {

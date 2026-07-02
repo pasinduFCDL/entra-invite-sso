@@ -5,6 +5,7 @@ export interface AppTokenPayload {
   userId: string;
   email: string;
   role: string;
+  displayName:string;
 }
 
 @Injectable()

@@ -1,19 +1,12 @@
 import { useLocation } from 'react-router-dom';
 import { useMsal } from '@azure/msal-react';
-import { jwtDecode } from 'jwt-decode';
+import { getAuthClaims, clearAuthToken } from '../../auth/authToken';
 
 interface DashboardUser {
   id: string;
   email: string;
   role: string;
   displayName?: string;
-}
-
-// Claims carried by the app session JWT (see backend AppJwtService).
-interface AuthTokenClaims {
-  userId: string;
-  email: string;
-  role: string;
 }
 
 const card: React.CSSProperties = {
@@ -27,20 +20,15 @@ function useCurrentUser(): DashboardUser | null {
   const location = useLocation();
   const navUser = (location.state as { user?: DashboardUser } | null)?.user;
 
-  const token = sessionStorage.getItem('auth_token');
-  if (!token) return navUser ?? null;
+  const claims = getAuthClaims();
+  if (!claims) return navUser ?? null;
 
-  try {
-    const claims = jwtDecode<AuthTokenClaims>(token);
-    return {
-      id: claims.userId,
-      email: claims.email,
-      role: claims.role,
-      displayName: navUser?.displayName,
-    };
-  } catch {
-    return navUser ?? null;
-  }
+  return {
+    id: claims.userId,
+    email: claims.email,
+    role: claims.role,
+    displayName: claims.displayName,
+  };
 }
 
 export default function DashboardPage() {
@@ -48,7 +36,7 @@ export default function DashboardPage() {
   const { instance } = useMsal();
 
   function handleSignOut() {
-    sessionStorage.removeItem('auth_token');
+    clearAuthToken();
     instance.clearCache().catch(() => {});
     window.location.assign('/signin');
   }

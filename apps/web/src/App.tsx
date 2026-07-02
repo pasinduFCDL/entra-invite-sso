@@ -24,7 +24,14 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/invite" element={<InviteUserPage />} />
+        <Route
+          path="/invite"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <InviteUserPage />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/accept-invite" element={<AcceptInvitePage />} />
         <Route path="/signin" element={<SignInPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
