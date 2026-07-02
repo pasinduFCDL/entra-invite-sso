@@ -120,7 +120,7 @@ export default function AcceptInvitePage() {
       const result = await acceptInvite({ invitationToken, entraToken });
       sessionStorage.setItem('auth_token', result.accessToken);
       sessionStorage.removeItem(INVITE_TOKEN_KEY);
-      navigate('/dashboard', { replace: true, state: { user: result.user } });
+      navigate('/', { replace: true, state: { user: result.user } });
     } catch (err: any) {
       const code: string = err?.code || 'ERROR';
       const message = ERROR_MESSAGES[code] || err?.message || 'Something went wrong. Please try again.';

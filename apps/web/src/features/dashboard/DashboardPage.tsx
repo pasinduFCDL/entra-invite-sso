@@ -1,11 +1,19 @@
-import { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { useMsal } from '@azure/msal-react';
+import { jwtDecode } from 'jwt-decode';
 
 interface DashboardUser {
   id: string;
   email: string;
   role: string;
-  displayName: string;
+  displayName?: string;
+}
+
+// Claims carried by the app session JWT (see backend AppJwtService).
+interface AuthTokenClaims {
+  userId: string;
+  email: string;
+  role: string;
 }
 
 const card: React.CSSProperties = {
@@ -15,27 +23,49 @@ const card: React.CSSProperties = {
   marginTop: 16,
 };
 
-export default function DashboardPage() {
-  const navigate = useNavigate();
+function useCurrentUser(): DashboardUser | null {
   const location = useLocation();
-  const user = (location.state as { user?: DashboardUser } | null)?.user;
+  const navUser = (location.state as { user?: DashboardUser } | null)?.user;
 
-  useEffect(() => {
-    if (!sessionStorage.getItem('auth_token')) {
-      navigate('/', { replace: true });
-    }
-  }, [navigate]);
+  const token = sessionStorage.getItem('auth_token');
+  if (!token) return navUser ?? null;
+
+  try {
+    const claims = jwtDecode<AuthTokenClaims>(token);
+    return {
+      id: claims.userId,
+      email: claims.email,
+      role: claims.role,
+      displayName: navUser?.displayName,
+    };
+  } catch {
+    return navUser ?? null;
+  }
+}
+
+export default function DashboardPage() {
+  const user = useCurrentUser();
+  const { instance } = useMsal();
+
+  function handleSignOut() {
+    sessionStorage.removeItem('auth_token');
+    instance.clearCache().catch(() => {});
+    window.location.assign('/signin');
+  }
 
   return (
     <div style={card}>
       <h2>Dashboard</h2>
       {user ? (
         <p>
-          Welcome, <strong>{user.displayName || user.email}</strong>.
+          You're signed in, <strong>{user.displayName || user.email}</strong>
         </p>
       ) : (
         <p>You're signed in.</p>
       )}
+      <button onClick={handleSignOut} style={{ padding: "8px 20px", marginTop: 12 }}>
+        Sign out
+      </button>
     </div>
   );
 }

@@ -8,6 +8,10 @@ export interface AcceptInviteRequest {
   entraToken: string;
 }
 
+export interface SignInRequest {
+  entraToken: string;
+}
+
 export interface AcceptInviteSuccess {
   accessToken: string;
   user: {
@@ -70,6 +74,19 @@ export async function acceptInvite(body: AcceptInviteRequest): Promise<AcceptInv
   const res = await fetch(`${API_BASE}/invites/accept`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw parseError(res.status, data);
+  return data as AcceptInviteSuccess;
+}
+
+/** Exchange a Graph token for an app session JWT for an already-active user. */
+export async function signIn(body: SignInRequest): Promise<AcceptInviteSuccess> {
+  const res = await fetch(`${API_BASE}/auth/signin`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
 

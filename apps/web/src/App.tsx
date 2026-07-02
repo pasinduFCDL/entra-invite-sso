@@ -1,7 +1,9 @@
-import { Link, Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import InviteUserPage from './features/invite/InviteUserPage';
 import AcceptInvitePage from './features/accept-invite/AcceptInvitePage';
+import SignInPage from './features/signin/SignInPage';
 import DashboardPage from './features/dashboard/DashboardPage';
+import ProtectedRoute from './auth/ProtectedRoute';
 
 const container: React.CSSProperties = {
   maxWidth: 480,
@@ -10,23 +12,21 @@ const container: React.CSSProperties = {
   padding: '0 16px',
 };
 
-function Home() {
-  return (
-    <div>
-      <h2>Entra Invite </h2>
-      <Link to="/invite">Invite page →</Link>
-    </div>
-  );
-}
-
 export default function App() {
   return (
     <div style={container}>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/invite" element={<InviteUserPage />} />
         <Route path="/accept-invite" element={<AcceptInvitePage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/signin" element={<SignInPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>

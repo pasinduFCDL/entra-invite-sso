@@ -20,6 +20,10 @@ export const msalConfig: Configuration = {
   },
 };
 
+// The sign-in page uses its own redirect URI (also must be registered as a
+// SPA redirect URI in the Entra app registration).
+export const signInRedirectUri = `${window.location.origin}/signin`;
+
 // Scope used by the accept-invite page: read the signed-in user's own profile.
 // User.Read is a standard delegated scope — users can self-consent, no admin consent needed.
 export const graphUserReadScopes = ['https://graph.microsoft.com/User.Read'];

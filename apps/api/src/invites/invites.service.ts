@@ -11,7 +11,7 @@ import { UsersService } from '../users/users.service';
 import { UserStatus } from '../users/user-status.enum';
 import { GraphService } from '../graph/graph.service';
 import { InviteTokenService } from './invite-token.service';
-import { AppJwtService } from './app-jwt.service';
+import { AppJwtService } from '../auth/app-jwt.service';
 import { CreateInviteDto } from './dto/create-invite.dto';
 import { AcceptInviteDto } from './dto/accept-invite.dto';
 import { OboService } from 'src/graph/obo.service';
@@ -24,7 +24,7 @@ export interface InviteResult {
   invitationUrl: string;
 }
 
-export interface AcceptInviteResult {
+export interface AuthResult {
   accessToken: string;
   user: {
     id: string;
@@ -137,7 +137,7 @@ export class InvitesService {
     return this.invite(dto, graphToken, admin?.id);
   }
 
-  async accept(dto: AcceptInviteDto): Promise<AcceptInviteResult> {
+  async accept(dto: AcceptInviteDto): Promise<AuthResult> {
     let claims: InviteClaims;
     try {
       claims = jwt.verify(dto.invitationToken, this.inviteSecret) as InviteClaims;
