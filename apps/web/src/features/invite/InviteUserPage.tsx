@@ -1,5 +1,8 @@
-import { FormEvent, useState } from 'react';
-import { submitInviteDev, InviteSuccess, ApiError } from '../../api/inviteApi';
+import { FormEvent, useEffect, useState } from 'react';
+import { useMsal } from '@azure/msal-react';
+import { InteractionRequiredAuthError } from '@azure/msal-browser';
+import { apiScopes, inviteRedirectUri } from '../../auth/msalConfig';
+import { submitInvite, InviteSuccess, ApiError } from '../../api/inviteApi';
 
 const ROLES = ['member', 'viewer', 'admin'];
 
@@ -10,19 +13,47 @@ type Feedback =
   | null;
 
 export default function InviteUserPage() {
+  const { instance, accounts } = useMsal();
   const [username, setUsername] = useState('');
   const [role, setRole] = useState('member');
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState<Feedback>(null);
 
+  // Settle any redirect returning from the interactive consent fallback so
+  // MSAL's interaction state resets (a second submit then acquires silently).
+  useEffect(() => {
+    instance.handleRedirectPromise().catch(() => {});
+  }, [instance]);
+
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setLoading(true);
     setFeedback(null);
+
+    const account = accounts[0] ?? instance.getActiveAccount() ?? undefined;
+    if (!account) {
+      setFeedback({ kind: 'error', message: 'Your session has expired. Please sign in again.' });
+      setLoading(false);
+      return;
+    }
+
     try {
-      const data = await submitInviteDev({ username, role });
+      // Real production flow: acquires the admin's API-audience token (token #1)
+      // and the backend runs the OBO exchange to call Graph as the admin.
+      const data = await submitInvite(instance, account, { username, role });
       setFeedback({ kind: 'success', data });
     } catch (e) {
+      // First-time API-scope consent isn't cached yet — kick off interactive
+      // consent, then the admin can resubmit (silent acquisition will work).
+      if (e instanceof InteractionRequiredAuthError) {
+        await instance.acquireTokenRedirect({
+          scopes: apiScopes,
+          account,
+          redirectUri: inviteRedirectUri,
+        });
+        return;
+      }
+
       const err = e as ApiError;
       if (err.code === 'ALREADY_REGISTERED') {
         setFeedback({ kind: 'warning', message: 'This user is already registered.' });
