@@ -14,7 +14,7 @@ import { InviteTokenService } from './invite-token.service';
 import { AppJwtService } from '../auth/app-jwt.service';
 import { CreateInviteDto } from './dto/create-invite.dto';
 import { AcceptInviteDto } from './dto/accept-invite.dto';
-import { OboService } from 'src/graph/obo.service';
+import { OboService } from '../graph/obo.service';
 
 export interface InviteResult {
   code: 'INVITE_CREATED' | 'INVITE_RENEWED';

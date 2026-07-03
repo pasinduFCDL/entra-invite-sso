@@ -5,7 +5,7 @@ import { GraphModule } from '../graph/graph.module';
 import { InvitesController } from './invites.controller';
 import { InvitesService } from './invites.service';
 import { InviteTokenService } from './invite-token.service';
-import { OboService } from 'src/graph/obo.service';
+import { OboService } from '../graph/obo.service';
 
 @Module({
   imports: [AuthModule, UsersModule, GraphModule],

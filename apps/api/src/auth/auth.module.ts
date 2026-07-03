@@ -5,6 +5,8 @@ import { UsersModule } from '../users/users.module';
 import { GraphModule } from '../graph/graph.module';
 import { AzureJwtGuard } from './azure-jwt.guard';
 import { AdminGuard } from './admin.guard';
+import { AppJwtGuard } from './app-jwt.guard';
+import { RolesGuard } from './roles.guard';
 import { AppJwtService } from './app-jwt.service';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
@@ -22,7 +24,7 @@ import { AuthController } from './auth.controller';
     }),
   ],
   controllers: [AuthController],
-  providers: [AzureJwtGuard, AdminGuard, AppJwtService, AuthService],
-  exports: [AzureJwtGuard, AdminGuard, AppJwtService],
+  providers: [AzureJwtGuard, AdminGuard, AppJwtGuard, RolesGuard, AppJwtService, AuthService],
+  exports: [AzureJwtGuard, AdminGuard, AppJwtGuard, RolesGuard, AppJwtService],
 })
 export class AuthModule {}
