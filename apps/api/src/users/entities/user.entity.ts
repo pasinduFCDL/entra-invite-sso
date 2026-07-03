@@ -2,10 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { UserRole, UserStatus } from '../user-status.enum';
+import { UserStatus } from '../user-status.enum';
+import { Role } from './role.entity';
 
 @Entity('users')
 export class User {
@@ -16,8 +19,14 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column({ default: UserRole.MEMBER })
-  role: string;
+  @Column({ name: 'role_id', type: 'uuid', nullable: true })
+  roleId: string;
+
+  // Eager-loaded so read paths can rely on `user.role.name` without an
+  // explicit join. Each user has exactly one role.
+  @ManyToOne(() => Role, (role) => role.users, { eager: true })
+  @JoinColumn({ name: 'role_id' })
+  role: Role;
 
   @Column({ type: 'enum', enum: UserStatus, default: UserStatus.PENDING_INVITE })
   status: UserStatus;

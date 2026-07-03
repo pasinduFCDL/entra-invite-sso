@@ -8,6 +8,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
 import { UsersService } from '../users/users.service';
+import { RolesService } from '../users/roles.service';
 import { UserStatus } from '../users/user-status.enum';
 import { GraphService } from '../graph/graph.service';
 import { InviteTokenService } from './invite-token.service';
@@ -48,6 +49,7 @@ export class InvitesService {
   constructor(
     private readonly config: ConfigService,
     private readonly usersService: UsersService,
+    private readonly rolesService: RolesService,
     private readonly graph: GraphService,
     private readonly inviteToken: InviteTokenService,
     private readonly obo: OboService,
@@ -83,10 +85,18 @@ export class InvitesService {
       });
     }
 
+    const role = await this.rolesService.findByName(dto.role);
+    if (!role) {
+      throw new NotFoundException({
+        code: 'ROLE_NOT_FOUND',
+        message: `Unknown role: ${dto.role}`,
+      });
+    }
+
     const { token, url } = this.inviteToken.create({ email, role: dto.role });
 
     const commonFields = {
-      role: dto.role,
+      roleId: role.id,
       status: UserStatus.PENDING_INVITE,
       entraObjectId: entraUser.id,
       displayName: entraUser.displayName,
@@ -103,7 +113,7 @@ export class InvitesService {
         code: 'INVITE_RENEWED',
         userId: updated.id,
         email: updated.email,
-        role: updated.role,
+        role: dto.role,
         invitationUrl: url,
       };
     }
@@ -114,7 +124,7 @@ export class InvitesService {
       code: 'INVITE_CREATED',
       userId: created.id,
       email: created.email,
-      role: created.role,
+      role: dto.role,
       invitationUrl: url,
     };
   }
@@ -221,7 +231,7 @@ export class InvitesService {
     const accessToken = this.appJwt.sign({
       userId: user.id,
       email: user.email,
-      role: user.role,
+      role: user.role?.name,
       displayName: user.displayName,
     });
 
@@ -230,7 +240,7 @@ export class InvitesService {
       user: {
         id: user.id,
         email: user.email,
-        role: user.role,
+        role: user.role?.name,
         displayName: entraUser.displayName || user.displayName,
       },
     };

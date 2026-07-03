@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import configuration from './config/configuration';
 import { envValidationSchema } from './config/env.validation';
 import { User } from './users/entities/user.entity';
+import { Role } from './users/entities/role.entity';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { GraphModule } from './graph/graph.module';
@@ -26,7 +27,7 @@ import { AdminSeeder } from './seed/admin.seeder';
         username: config.get<string>('db.username'),
         password: config.get<string>('db.password'),
         database: config.get<string>('db.database'),
-        entities: [User],
+        entities: [User, Role],
         synchronize: config.get<boolean>('db.synchronize'),
       }),
     }),

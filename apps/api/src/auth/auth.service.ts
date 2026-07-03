@@ -66,7 +66,7 @@ export class AuthService {
     const accessToken = this.appJwt.sign({
       userId: user.id,
       email: user.email,
-      role: user.role,
+      role: user.role?.name,
       displayName: user.displayName,
     });
 
@@ -75,7 +75,7 @@ export class AuthService {
       user: {
         id: user.id,
         email: user.email,
-        role: user.role,
+        role: user.role?.name,
         displayName: entraUser.displayName || user.displayName,
       },
     };
